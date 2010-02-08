@@ -1,0 +1,6 @@
+To get up and running:
+
+    $ virtualenv env
+    $ source env/bin/activate
+    $ easy_install pip
+    $ pip install -E env -r requirements.txt
