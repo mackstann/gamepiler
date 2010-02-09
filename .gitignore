@@ -2,3 +2,4 @@ env
 pip-log.txt
 cache
 http-cache
+*.pyc
