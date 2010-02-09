@@ -11,20 +11,19 @@ for section in config.sections():
     print
 
     if config.has_option(section, 'url'):
-        url = config.get(section, 'url')
-        print url
-        fetcher = gamepiler.SimpleFetcher(url)
+        urls = [config.get(section, 'url')]
 
     elif config.has_option(section, 'url_pattern'):
         urlpat = config.get(section, 'url_pattern')
-        print urlpat
 
         if config.has_option(section, 'pattern_values'):
             values = config.get(section, 'pattern_values').split()
         else:
             values = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ') + ['0-9']
 
-        fetcher = gamepiler.PatternFetcher(urlpat, values)
+        urls = [ urlpat.replace('$', val) for val in values ]
+
+    fetcher = gamepiler.Fetcher(urls)
 
     pages = []
     fetch = fetcher.fetch_pages()
