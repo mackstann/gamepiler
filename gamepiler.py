@@ -1,18 +1,14 @@
-import os, ConfigParser, urllib2, time, httplib2
+import os, httplib2
 
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
 
-config = ConfigParser.SafeConfigParser()
-config.read('scrape-parameters.conf')
-
 class FetchFailure(Exception):
     pass
 
 class SimpleFetcher(object):
-
     def __init__(self, url):
         self.url = url
 
@@ -61,35 +57,4 @@ class Cache(object):
         chunks = pickle.load(f)
         f.close()
         return chunks
-
-cache = Cache()
-
-for section in config.sections():
-    print section,
-
-    if config.has_option(section, 'url'):
-        print config.get(section, 'url')
-        fetcher = SimpleFetcher(config.get(section, 'url'))
-    elif config.has_option(section, 'url_pattern'):
-        print config.get(section, 'url_pattern')
-
-        if config.has_option(section, 'pattern_values'):
-            values = config.get(section, 'pattern_values').split()
-        else:
-            values = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ') + ['0-9']
-
-        fetcher = PatternFetcher(config.get(section, 'url_pattern'), values)
-
-    pages = []
-    fetch = fetcher.fetch_pages()
-    while True:
-        try:
-            pages.append(fetch.next())
-        except FetchFailure, ex:
-            print ex
-        except StopIteration:
-            break
-        time.sleep(3)
-
-    cache.put(section, pages)
 
