@@ -1,42 +1,23 @@
-import ConfigParser, gamepiler, time
+import gamepiler, time
 
-config = ConfigParser.SafeConfigParser()
-config.read('scrape-parameters.conf')
-
+config = gamepiler.Config('scrape-parameters.conf')
 cache = gamepiler.Cache()
 
-for section in config.sections():
+for game in config.game_ids():
     print
-    print section
+    print game
     print
 
-    if config.has_option(section, 'url'):
-        urls = [config.get(section, 'url')]
-
-    elif config.has_option(section, 'url_pattern'):
-        urlpat = config.get(section, 'url_pattern')
-
-        if config.has_option(section, 'pattern_values'):
-            values = config.get(section, 'pattern_values').split()
-        else:
-            values = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ') + ['0-9']
-
-        urls = [ urlpat.replace('$', val) for val in values ]
-
-    fetcher = gamepiler.Fetcher(urls)
+    urls = config.urls_for_game(game)
 
     pages = []
-    fetch = fetcher.fetch_pages()
-    while True:
+    for url in urls:
+        print url
         try:
-            pages.append(fetch.next())
+            pages.append(gamepiler.fetch(url))
         except gamepiler.FetchFailure, ex:
             print ex
-        except StopIteration:
-            break
-        else:
-            print "fetched a page."
-        time.sleep(3)
+        time.sleep(5)
 
-    cache.put(section, pages)
+    cache.put(game, pages)
 
