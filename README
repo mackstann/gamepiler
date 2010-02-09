@@ -4,3 +4,6 @@ To get up and running:
     $ source env/bin/activate
     $ easy_install pip
     $ pip install -E env -r requirements.txt
+    $ python fetch.py
+    $ python parse.py
+    ... TBA ...
